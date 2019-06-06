@@ -32,7 +32,7 @@
         window.addEventListener('load', () => {
             // Check that service workers are registered
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js').then(registration => {
+                navigator.serviceWorker.register('/dickglasses-faces/sw.js').then(registration => {
                     console.log('SW registered: ', registration);
                 }).catch(registrationError => {
                     console.log('SW registration failed: ', registrationError);
