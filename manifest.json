@@ -5,8 +5,8 @@
   "background_color": "#2196f3",
   "display": "fullscreen",
   "orientation": "portrait",
-  "Scope": "/",
-  "start_url": "/",
+  "Scope": "/dickglasses-faces/",
+  "start_url": "/dickglasses-faces/",
   "icons": [
     {
       "src": "assets/icons/icon-72x72.png",
