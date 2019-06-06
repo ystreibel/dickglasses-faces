@@ -49,8 +49,8 @@ export class DetectorFaces extends HTMLElement {
         </style>
         <video id="video" autoplay muted></video>
         <canvas id="canvas"></canvas>
-        <img id="mustache" src="/assets/mustache.png">
-        <img id="sunglasses" src="/assets/dick.png">
+        <img id="mustache" src="./assets/mustache.png">
+        <img id="sunglasses" src="./assets/dick.png">
         `;
     }
 
