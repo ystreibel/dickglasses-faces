@@ -174,7 +174,7 @@ export class RecorderFaces extends HTMLElement {
             method: 'POST',
             body: blob,
             headers: new Headers({
-                'Authorization': 'Bearer ya29.GqQBEge22c-624F-J866jjE0as8IWVWhTAOJfOxUzcF9Ppi5DMmHu8E4Ar6_hEhzD5rxcXNvGl7oAs1ugOwcd4ScqmId24fYPYFvxGRqj-VSsMz2CJqH5fwxNicnvRhvFEv51XP6NNZWuN6096kOat6nntnYe44b7Cx240gPehl57kF5XgGd2BhlRqUOLA2kLa1FaA0CQAQgLYicOti-XBcaJS74X_4',
+                'Authorization': 'Bearer ya29.GqQBJAdF9lJejlUxjIukQey26M5FvwpKph3ErP3X3nY2akPuCzyFlHH7MZ_varUpycFGGROhgh46lHq0IZrZfIyxP7yDgehN4rUhtHc0qwI3yTh9MwNtZBIjxsl9iQj-5GGj7uDQsvLSIxzm05UCEqf4nem2D7FDfJn4yNxqV-csfiHJwdE7KEYAfF1PYeGAYhskLeLdos1ef5G9DlrNVUDo-wsWx6M',
                 'Content-type': 'video/webm',
                 'Content-Length': blob.length
             })

@@ -8,9 +8,11 @@ export class DetectorFaces extends HTMLElement {
     constructor(){
         super();
         this.attachShadow({mode: 'open'});
-        this.detector = new FaceDetector({fastMode: true, maxDetectedFace: 3});
-        this.isDetectingFace = false;
+        this.faceDetectionSupported = window.FaceDetector ? true : false;
+        this.detector = this.faceDetectionSupported ? new FaceDetector({fastMode: true, maxDetectedFace: 3}) : undefined;
         this.faces = [];
+        this.context = undefined;
+        this.ratio = 0;
     }
 
     render(){
@@ -47,8 +49,8 @@ export class DetectorFaces extends HTMLElement {
                 transform: translateX(0) !important;
             }
         </style>
-        <video id="video" autoplay muted></video>
         <canvas id="canvas"></canvas>
+        <video id="video" autoplay muted></video>
         <img id="mustache" src="./assets/mustache.png">
         <img id="sunglasses" src="./assets/dick.png">
         `;
@@ -57,8 +59,8 @@ export class DetectorFaces extends HTMLElement {
     async connectedCallback(){
         render(this.render(), this.shadowRoot);
 
-        this.video = this.shadowRoot.querySelector('#video');
         this.canvas = this.shadowRoot.querySelector('#canvas');
+        this.video = this.shadowRoot.querySelector('#video');
         this.mustache = this.shadowRoot.querySelector('#mustache');
         this.sunglasses = this.shadowRoot.querySelector('#sunglasses');
 
@@ -66,20 +68,50 @@ export class DetectorFaces extends HTMLElement {
     }
 
     async getUserMedia(){
-        this.video.srcObject = await navigator.mediaDevices.getUserMedia({video:{facingUser: true, frameRate: 60}});
+        this.video.srcObject = await navigator.mediaDevices.getUserMedia({video:{facingMode: 'user', frameRate: 60}});
 
         await this.video.play();
 
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
 
+        if (this.canvas.width % 2 == 1) {
+            this.canvas.width += 1;
+        }
+
         this.context = this.canvas.getContext('2d');
         this.ratio = Math.max(this.canvas.width / this.video.videoWidth, this.canvas.height / this.video.videoHeight);
-
-        this.draw();
+        
+        if (this.faceDetectionSupported) {
+            this.draw();
+        } else {
+            console.error(new Error("FaceDetector - Unsupported Version or Feature is not enabled"));
+        }
     }
 
-    draw(){
+    drawAccesories(face){
+        const boundingBox = face.boundingBox;
+
+        this.context.drawImage(
+            this.mustache,
+            boundingBox.left,
+            boundingBox.top + boundingBox.height * 3/4,
+            boundingBox.width,
+            boundingBox.height / 5
+        );
+
+        this.context.drawImage(
+            this.sunglasses,
+            boundingBox.left,
+            boundingBox.top + boundingBox.height / 2 - this.sunglasses.height * boundingBox.width / this.sunglasses.width / 2,
+            boundingBox.width,
+            this.sunglasses.height * boundingBox.width / this.sunglasses.width
+        );
+    }
+
+    async draw(){
+        requestAnimationFrame(this.draw.bind(this));
+
         this.context.drawImage(this.video,
             (this.canvas.width - this.video.videoWidth * this.ratio) / 2,
             0,
@@ -87,38 +119,12 @@ export class DetectorFaces extends HTMLElement {
             this.video.videoHeight * this.ratio
         );
 
-        if(!this.isDetectingFace){
-            this.isDetectingFace = true;
-            this.detector.detect(this.canvas).then((faceArray) => {
-                this.faces = faceArray;
-                this.isDetectingFace = false;
-            });
+        try {
+            this.faces = await this.detector.detect(this.canvas);
+        } catch (e) {
+            console.error('Face detection failed:', e.message);
         }
-
-        if(this.faces.length){
-
-            this.faces.forEach((detectedFace) => {
-                const face = detectedFace.boundingBox;
-
-                this.context.drawImage(
-                    this.mustache,
-                    face.left,
-                    face.top + face.height * 3/4,
-                    face.width,
-                    face.height / 5
-                );
-
-                this.context.drawImage(
-                    this.sunglasses,
-                    face.left,
-                    face.top + face.height / 2 - this.sunglasses.height * face.width / this.sunglasses.width / 2,
-                    face.width,
-                    this.sunglasses.height * face.width / this.sunglasses.width
-                );
-            })
-        }
-
-        requestAnimationFrame(this.draw.bind(this));
+        this.faces.forEach(face => this.drawAccesories(face));
     }
 }
 
